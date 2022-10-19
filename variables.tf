@@ -12,3 +12,5 @@ variable "cdn_comment" {
 }
 
 variable "region" {}
+
+variable "my_domain_name"{}
