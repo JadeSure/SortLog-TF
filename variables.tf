@@ -3,7 +3,7 @@ variable "bucket_name" {
   type    = string
 }
 
-variable "s3_origin_id"{
+variable "s3_origin_id" {
   type = string
 }
 
@@ -13,4 +13,6 @@ variable "cdn_comment" {
 
 variable "region" {}
 
-variable "my_domain_name"{}
+variable "my_domain_name" {}
+variable "acm_region" {}
+

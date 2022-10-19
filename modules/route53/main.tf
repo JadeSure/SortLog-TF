@@ -4,6 +4,11 @@
 locals {
   my_domain_name = var.my_domain_name
 }
+
+provider "aws" {
+  region = var.acm_region
+  alias = "Virginia"
+}
 data "aws_route53_zone" "route53_zone" {
     name         = local.my_domain_name
     private_zone = false
@@ -39,6 +44,7 @@ resource "aws_route53_record" "route53_record" {
 
 # validate acm certificates
 resource "aws_acm_certificate_validation" "acm_certificate_validation" {
+  provider = aws.Virginia
   certificate_arn         = var.acm_certificate.arn
   validation_record_fqdns = [for record in aws_route53_record.route53_record : record.fqdn]
 }

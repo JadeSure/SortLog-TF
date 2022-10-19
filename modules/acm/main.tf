@@ -2,7 +2,16 @@ locals {
   my_domain_name = var.my_domain_name
 }
 
+provider "aws" {
+ region = var.acm_region
+  alias = "Virginia"
+}
+
+
+
+
 resource "aws_acm_certificate" "acm_certificate" {
+  provider = aws.Virginia
   domain_name = local.my_domain_name
   # query acm for the sub domain name 
   subject_alternative_names = ["*.${local.my_domain_name}"]
