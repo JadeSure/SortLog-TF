@@ -14,6 +14,8 @@ module "front-cdn" {
   s3_origin_id = var.s3_origin_id
   domain_name  = module.front-s3.s3_bucket.bucket_regional_domain_name
   cdn_comment  = var.cdn_comment
+  my_domain_name = var.my_domain_name
+  acm_certificate = module.front-acm.acm_certificate
 }
 
 
@@ -45,4 +47,5 @@ module "front-route53" {
   acm_certificate  = module.front-acm.acm_certificate
   my_domain_name   = var.my_domain_name
   acm_region       = var.acm_region
+  cloudfront_distribution = module.front-cdn.cloudfront_distribution
 }

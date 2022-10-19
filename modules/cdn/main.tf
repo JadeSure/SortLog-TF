@@ -24,6 +24,9 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
   }
 
+  # If using route53 aliases for DNS we need to declare it here too, otherwise we'll get 403s.
+  aliases = [var.my_domain_name]
+
   enabled             = true
   is_ipv6_enabled     = true
   comment             = var.cdn_comment
@@ -71,6 +74,9 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   # for https
   viewer_certificate {
-    cloudfront_default_certificate = true
+    # cloudfront_default_certificate = true
+    acm_certificate_arn = var.acm_certificate.arn
+    ssl_support_method = "sni-only"
+    minimum_protocol_version = "TLSv1"
   }
 }

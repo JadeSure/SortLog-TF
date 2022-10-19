@@ -5,3 +5,4 @@ output "cloudfront_oia"{
 output "cloudfront_distribution" {
     value = aws_cloudfront_distribution.s3_distribution
 }
+
