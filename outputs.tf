@@ -7,3 +7,7 @@ output "website_endpoint" {
   #   value = aws_cloudfront_distribution.s3_distribution.domain_name
   value = module.front-cdn.cloudfront_distribution.domain_name
 }
+
+output "my_domain_name" {
+  value = var.my_domain_name
+}
