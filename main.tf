@@ -49,3 +49,33 @@ module "front-route53" {
   acm_region       = var.acm_region
   cloudfront_distribution = module.front-cdn.cloudfront_distribution
 }
+
+
+module "myapp-subnet" {
+  source = "./modules/vpc"
+  vpc_cidr_block = var.vpc_cidr_block
+  env_prefix = var.env_prefix
+
+  public_subnet_cidr_block = var.public_subnet_cidr_block
+  private_subnet_cidr_block = var.private_subnet_cidr_block
+
+  avail_zone = var.avail_zone
+}
+
+
+
+# module "myapp-server"{
+#   source = "./modules/ec2"
+
+#   vpc_id = aws_vpc.myapp-vpc.id
+#   my_ip_address = var.my_ip_address
+#   env_prefix = var.env_prefix
+#   instance_type = var.instance_type
+#   avail_zone = var.avail_zone
+#   public_key_location = var.public_key_location
+#   # subnet_id = module.myapp-subnet.subnet[0].id
+#   # route_table_id = module.myapp-subnet.subnet[1].id
+#   subnet_id = module.myapp-subnet.oldiron1.id
+#   route_table_id = module.myapp-subnet.oldiron2.id
+  
+# }
