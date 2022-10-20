@@ -1,9 +1,9 @@
-resource "aws_lb" "alb_backend" {
+resource "aws_lb" "back_lb" {
   name               = "ECS-ALB"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_sg.id]
-  subnets            = [for subnet in aws_subnet.public : subnet.id]
+  subnets            = [for subnet in var.public_subnet : subnet.id]
 
   enable_deletion_protection = true
 
@@ -25,22 +25,27 @@ data "aws_acm_certificate" "issued" {
 }
 
 
-resource "aws_lb_target_group" "alb-example" {
-  name        = "tf-example-lb-alb-tg"
+resource "aws_lb_target_group" "back_tg" {
+  name        = "myecs-tg"
   target_type = "alb"
   port        = 80
   protocol    = "TCP"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.myapp_vpc.id
 
   health_check {
-    
+      healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    protocol            = "HTTP"
+    matcher             = "200"
+    path                = var.health_check_path
+    interval            = 30
   }
 }
 
 
-
 resource "aws_lb_listener" "front_end" {
-  load_balancer_arn = aws_lb.front_end.arn
+  load_balancer_arn = aws_lb.back_lb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
@@ -48,7 +53,7 @@ resource "aws_lb_listener" "front_end" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.front_end.arn
+    target_group_arn = aws_lb_target_group.back_tg.arn
   }
 }
 
