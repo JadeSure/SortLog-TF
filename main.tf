@@ -68,18 +68,16 @@ module "back-elb" {
 
 
 
-# module "myapp-server"{
-#   source = "./modules/ec2"
+module "myapp-server"{
+  source = "./modules/ec2"
 
-#   vpc_id = aws_vpc.myapp-vpc.id
-#   my_ip_address = var.my_ip_address
-#   env_prefix = var.env_prefix
-#   instance_type = var.instance_type
-#   avail_zone = var.avail_zone
-#   public_key_location = var.public_key_location
-#   # subnet_id = module.myapp-subnet.subnet[0].id
-#   # route_table_id = module.myapp-subnet.subnet[1].id
-#   subnet_id = module.myapp-subnet.oldiron1.id
-#   route_table_id = module.myapp-subnet.oldiron2.id
+  vpc_id = module.back-vpc.myapp_vpc.id
+  my_ip_address = var.my_ip_address
+  env_prefix = var.env_prefix
+  instance_type = var.instance_type
+  avail_zone = var.avail_zone
+  public_key_location = var.public_key_location
+  subnet_id = module.back-vpc.public_subnet.id
+  route_table_id = module.back-vpc.public_route_table.id
 
-# }
+}

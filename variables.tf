@@ -12,7 +12,6 @@ variable "cdn_comment" {
 }
 
 variable "region" {}
-
 variable "my_domain_name" {}
 variable "acm_region" {}
 
@@ -22,4 +21,7 @@ variable "private_subnet_cidr_block" {}
 variable "env_prefix" {}
 variable "avail_zone" {}
 
+variable "public_key_location" {}
+variable "my_ip_address" {}
+variable "instance_type" {}
 

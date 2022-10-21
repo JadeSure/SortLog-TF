@@ -114,7 +114,7 @@ resource "aws_instance" "myapp-server" {
   # associate a public IP address with an instance in a VPC
   associate_public_ip_address = true
   key_name = aws_key_pair.ssh-key.key_name
-  user_data = file("./entry-script.sh")
+  # user_data = file("./entry-script.sh")
                
 
   tags = {
