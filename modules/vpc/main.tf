@@ -6,8 +6,10 @@ resource "aws_vpc" "myapp-vpc" {
 }
 
 resource "aws_subnet" "public-subnet-1" {
+  count             = var.az_public_count
     vpc_id = aws_vpc.myapp-vpc.id
-    cidr_block = var.public_subnet_cidr_block
+    # cidr_block = var.public_subnet_cidr_block
+    cidr_block = cidrsubnet(aws_vpc.myapp-vpc.cidr_block, 8, count.index)
     availability_zone = var.avail_zone
 
     tags = {
@@ -16,8 +18,10 @@ resource "aws_subnet" "public-subnet-1" {
 }
 
 resource "aws_subnet" "private-subnet-1" {
+  count             = var.az_private_count
     vpc_id = aws_vpc.myapp-vpc.id
-    cidr_block = var.private_subnet_cidr_block
+    # cidr_block = var.private_subnet_cidr_block
+    cidr_block = cidrsubnet(aws_vpc.myapp-vpc.cidr_block, 8, var.az_private_count + count.index)
     availability_zone = var.avail_zone
 
     tags = {
@@ -38,6 +42,7 @@ resource "aws_internet_gateway" "myapp-igw" {
 # for private subnet
 resource "aws_eip" "nat_eip" {
   vpc = true
+  count = var.az_private_count
   depends_on = [aws_internet_gateway.myapp-igw]
   tags = {
     Name: "NAT Gateway EIP"
@@ -45,10 +50,11 @@ resource "aws_eip" "nat_eip" {
 }
 
 resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat_eip.id
+  count = var.az_private_count
+  allocation_id = element(aws_eip.nat_eip.*.id, count.index)
 
   # must be in the public subnet
-  subnet_id = aws_subnet.public-subnet-1.id
+  subnet_id = element(aws_subnet.public-subnet-1.*.id, count.index)
 
   tags = {
     Name = "Main NAT Gateway"
@@ -78,6 +84,7 @@ resource "aws_route_table" "public-route-table" {
 
 resource "aws_route_table" "private-route-table" {
   vpc_id = aws_vpc.myapp-vpc.id
+  count = var.az_private_count
 
 #   route {
     # cidr_block = var.vpc_cidr_block
@@ -87,7 +94,7 @@ resource "aws_route_table" "private-route-table" {
   route {
     # ipv6_cidr_block        = "::/0"
     cidr_block= "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat.id
+    gateway_id = element(aws_nat_gateway.nat.*.id, count.index)
     # egress_only_gateway_id = aws_egress_only_internet_gateway.example.id
   }
 
@@ -99,12 +106,14 @@ resource "aws_route_table" "private-route-table" {
 
 
 resource "aws_route_table_association" "public" {
-  subnet_id = aws_subnet.public-subnet-1.id
-  route_table_id = aws_route_table.public-route-table.id
+  count = var.az_public_count
+  subnet_id = element(aws_subnet.public-subnet-1.*.id, count.index)
+  route_table_id = element(aws_route_table.public-route-table.*.id, count.index)
 }
 
 
 resource "aws_route_table_association" "private" {
-  subnet_id = aws_subnet.private-subnet-1.id
-  route_table_id = aws_route_table.private-route-table.id
+    count = var.az_private_count
+  subnet_id = element(aws_subnet.private-subnet-1.*.id, count.index)
+  route_table_id = element(aws_route_table.private-route-table.*.id, count.index)
 }

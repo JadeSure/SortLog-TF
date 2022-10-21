@@ -55,16 +55,18 @@ module "back-vpc" {
   source         = "./modules/vpc"
   vpc_cidr_block = var.vpc_cidr_block
   env_prefix     = var.env_prefix
-  public_subnet_cidr_block  = var.public_subnet_cidr_block
-  private_subnet_cidr_block = var.private_subnet_cidr_block
+  # public_subnet_cidr_block  = var.public_subnet_cidr_block
+  # private_subnet_cidr_block = var.private_subnet_cidr_block
+  az_private_count = var.az_private_count
+  az_public_count = var.az_public_count
   avail_zone = var.avail_zone
 }
 
-module "back-elb" {
-  source = "./modules/elb"
+# module "back-elb" {
+#   source = "./modules/elb"
   
 
-}
+# }
 
 
 
@@ -77,7 +79,8 @@ module "myapp-server"{
   instance_type = var.instance_type
   avail_zone = var.avail_zone
   public_key_location = var.public_key_location
-  subnet_id = module.back-vpc.public_subnet.id
+  # because I used count skills in vpc, I need to specific which public subnet to create
+  subnet_id = module.back-vpc.public_subnet[0].id
   route_table_id = module.back-vpc.public_route_table.id
 
 }
