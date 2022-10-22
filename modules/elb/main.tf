@@ -1,17 +1,22 @@
+provider "aws" {
+  region = var.acm_region
+  alias  = "Virginia"
+}
+
 resource "aws_lb" "back_lb" {
   name               = "ECS-ALB"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.lb_sg.id]
+  security_groups    = [aws_security_group.alb-sg.id]
   subnets            = [for subnet in var.public_subnet : subnet.id]
 
   enable_deletion_protection = true
 
-  access_logs {
-    bucket  = aws_s3_bucket.lb_logs.bucket
-    prefix  = "test-lb"
-    enabled = true
-  }
+  # access_logs {
+  #   bucket  = aws_s3_bucket.lb_logs.bucket
+  #   prefix  = "test-lb"
+  #   enabled = true
+  # }
 
   tags = {
     Environment = "production"
@@ -19,21 +24,22 @@ resource "aws_lb" "back_lb" {
 }
 
 
-data "aws_acm_certificate" "issued" {
-  domain   = "tf.example.com"
-  statuses = ["ISSUED"]
-}
-
+# data "aws_acm_certificate" "issued" {
+#   # provider = aws.Virginia
+#   domain   = var.my_domain_name
+#   statuses = ["ISSUED"]
+#   depends_on = [var.acm_certificate_sdy]
+# }
 
 resource "aws_lb_target_group" "back_tg" {
-  name        = "myecs-tg"
-  target_type = "alb"
-  port        = 80
-  protocol    = "TCP"
-  vpc_id      = var.myapp_vpc.id
+  name = "myecs-tg"
+  # target_type = "alb"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.myapp_vpc.id
 
   health_check {
-      healthy_threshold   = 2
+    healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 3
     protocol            = "HTTP"
@@ -43,13 +49,19 @@ resource "aws_lb_target_group" "back_tg" {
   }
 }
 
+# resource "aws_lb_listener_certificate" "listener_certificate" {
+#   listener_arn    = aws_lb_listener.front_end_listener.arn
+#   certificate_arn = data.aws_acm_certificate.issued.arn
+# }
 
-resource "aws_lb_listener" "front_end" {
+
+resource "aws_lb_listener" "front_end_listener" {
   load_balancer_arn = aws_lb.back_lb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"
+  # certificate_arn   = data.aws_acm_certificate.issued.arn
+  certificate_arn = var.acm_certificate_sdy.arn
 
   default_action {
     type             = "forward"

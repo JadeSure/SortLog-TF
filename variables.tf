@@ -22,11 +22,14 @@ variable "vpc_cidr_block" {}
 # variable "private_subnet_cidr_block" {}
 variable "env_prefix" {}
 variable "avail_zone" {}
-variable az_private_count {}
-variable az_public_count {}
+variable "az_private_count" {}
+variable "az_public_count" {}
 
 # EC2
 variable "public_key_location" {}
 variable "my_ip_address" {}
 variable "instance_type" {}
+
+# ALB
+variable "health_check_path" {}
 

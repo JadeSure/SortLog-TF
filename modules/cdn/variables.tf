@@ -3,4 +3,4 @@ variable "domain_name" {}
 variable "cdn_comment" {}
 variable "my_domain_name" {}
 
-variable "acm_certificate"{}
+variable "acm_certificate" {}

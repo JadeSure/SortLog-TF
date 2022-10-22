@@ -3,15 +3,30 @@ locals {
 }
 
 provider "aws" {
- region = var.acm_region
-  alias = "Virginia"
+  region = var.acm_region
+  alias  = "Virginia"
 }
 
 
 
 
 resource "aws_acm_certificate" "acm_certificate" {
-  provider = aws.Virginia
+  provider    = aws.Virginia
+  domain_name = local.my_domain_name
+  # query acm for the sub domain name 
+  subject_alternative_names = ["*.${local.my_domain_name}"]
+  validation_method         = "DNS"
+
+  tags = {
+    Environment = "test"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_acm_certificate" "acm_certificate_sdy" {
   domain_name = local.my_domain_name
   # query acm for the sub domain name 
   subject_alternative_names = ["*.${local.my_domain_name}"]

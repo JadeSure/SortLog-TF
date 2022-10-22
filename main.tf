@@ -1,5 +1,7 @@
 provider "aws" {
   region = var.region
+  # shared_credentials_files = "$HOME/.aws/credentials"
+  profile = "default"
 }
 
 
@@ -58,29 +60,33 @@ module "back-vpc" {
   # public_subnet_cidr_block  = var.public_subnet_cidr_block
   # private_subnet_cidr_block = var.private_subnet_cidr_block
   az_private_count = var.az_private_count
-  az_public_count = var.az_public_count
-  avail_zone = var.avail_zone
+  az_public_count  = var.az_public_count
+  avail_zone       = var.avail_zone
 }
 
-# module "back-elb" {
-#   source = "./modules/elb"
-  
+module "back-elb" {
+  source              = "./modules/elb"
+  health_check_path   = var.health_check_path
+  my_domain_name      = var.my_domain_name
+  acm_region          = var.acm_region
+  public_subnet       = module.back-vpc.public_subnet
+  myapp_vpc           = module.back-vpc.myapp_vpc
+  acm_certificate_sdy = module.front-acm.acm_certificate_sdy
+}
 
-# }
 
 
-
-module "myapp-server"{
+module "myapp-server" {
   source = "./modules/ec2"
 
-  vpc_id = module.back-vpc.myapp_vpc.id
-  my_ip_address = var.my_ip_address
-  env_prefix = var.env_prefix
-  instance_type = var.instance_type
-  avail_zone = var.avail_zone
+  vpc_id              = module.back-vpc.myapp_vpc.id
+  my_ip_address       = var.my_ip_address
+  env_prefix          = var.env_prefix
+  instance_type       = var.instance_type
+  avail_zone          = var.avail_zone
   public_key_location = var.public_key_location
   # because I used count skills in vpc, I need to specific which public subnet to create
-  subnet_id = module.back-vpc.public_subnet[0].id
-  route_table_id = module.back-vpc.public_route_table.id
+  subnet_id      = module.back-vpc.public_subnet[0].id
+  route_table_id = module.back-vpc.public_route_table[0].id
 
 }

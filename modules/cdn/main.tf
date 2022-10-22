@@ -1,5 +1,5 @@
 locals {
-#   s3_origin_id = "sortLogS3Origin"
+  #   s3_origin_id = "sortLogS3Origin"
   s3_origin_id = var.s3_origin_id
 }
 
@@ -75,8 +75,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   # for https
   viewer_certificate {
     # cloudfront_default_certificate = true
-    acm_certificate_arn = var.acm_certificate.arn
-    ssl_support_method = "sni-only"
+    acm_certificate_arn      = var.acm_certificate.arn
+    ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1"
   }
 }
