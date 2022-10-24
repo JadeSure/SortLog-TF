@@ -10,3 +10,5 @@ variable "my_domain_name" {}
 variable "acm_region" {}
 variable "acm_certificate_sdy" {}
 
+variable "container_port" {}
+

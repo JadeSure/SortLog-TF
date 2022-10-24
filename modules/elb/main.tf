@@ -10,7 +10,7 @@ resource "aws_lb" "back_lb" {
   security_groups    = [aws_security_group.alb-sg.id]
   subnets            = [for subnet in var.public_subnet : subnet.id]
 
-  enable_deletion_protection = true
+  # enable_deletion_protection = true
 
   # access_logs {
   #   bucket  = aws_s3_bucket.lb_logs.bucket
@@ -33,7 +33,7 @@ resource "aws_lb" "back_lb" {
 
 resource "aws_lb_target_group" "back_tg" {
   name = "myecs-tg"
-  # target_type = "alb"
+  target_type = "ip"
   port     = 80
   protocol = "HTTP"
   vpc_id   = var.myapp_vpc.id
@@ -54,6 +54,23 @@ resource "aws_lb_target_group" "back_tg" {
 #   certificate_arn = data.aws_acm_certificate.issued.arn
 # }
 
+# one for HTTP and one for HTTPS, where the HTTP listener redirects to the HTTPS listener,
+#  which funnels traffic to the target group.
+resource "aws_alb_listener" "http" {
+  load_balancer_arn = aws_lb.back_lb.arn
+  port              = 80
+  protocol          = "HTTP"
+ 
+  default_action {
+   type = "redirect"
+ 
+   redirect {
+     port        = 443
+     protocol    = "HTTPS"
+     status_code = "HTTP_301"
+   }
+  }
+}
 
 resource "aws_lb_listener" "front_end_listener" {
   load_balancer_arn = aws_lb.back_lb.arn

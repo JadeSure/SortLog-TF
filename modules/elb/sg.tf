@@ -9,6 +9,7 @@ resource "aws_security_group" "alb-sg" {
     from_port   = 80
     to_port     = 80
     cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
@@ -16,6 +17,7 @@ resource "aws_security_group" "alb-sg" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
 
@@ -28,7 +30,8 @@ resource "aws_security_group" "alb-sg" {
 }
 
 
-# this security group for ecs - Traffic to the ECS cluster should only come from the ALB
+# this security group for ecs task - Traffic to the ECS cluster should only come from the ALB
+# allowing ingress access only to the port that is exposed by the task.
 resource "aws_security_group" "ecs_sg" {
   name        = "sotlog-ecs-tasks-security-group"
   description = "allow inbound access from the ALB only"
@@ -36,8 +39,12 @@ resource "aws_security_group" "ecs_sg" {
 
   ingress {
     protocol        = "tcp"
-    from_port       = 80
-    to_port         = 80
+    # from_port       = 80
+    # to_port         = 80
+    from_port = var.container_port
+    to_port = var.container_port
+    # cidr_blocks      = ["0.0.0.0/0"]
+    # ipv6_cidr_blocks = ["::/0"]
     security_groups = [aws_security_group.alb-sg.id]
   }
 

@@ -33,3 +33,8 @@ variable "instance_type" {}
 # ALB
 variable "health_check_path" {}
 
+# ECS
+variable "app_count" {}
+variable "container_port" {}
+variable "fargate_cpu" {}
+variable "fargate_memory" {}

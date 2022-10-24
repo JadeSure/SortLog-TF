@@ -69,6 +69,7 @@ module "back-elb" {
   health_check_path   = var.health_check_path
   my_domain_name      = var.my_domain_name
   acm_region          = var.acm_region
+  container_port = var.container_port
   public_subnet       = module.back-vpc.public_subnet
   myapp_vpc           = module.back-vpc.myapp_vpc
   acm_certificate_sdy = module.front-acm.acm_certificate_sdy
@@ -88,5 +89,18 @@ module "myapp-server" {
   # because I used count skills in vpc, I need to specific which public subnet to create
   subnet_id      = module.back-vpc.public_subnet[0].id
   route_table_id = module.back-vpc.public_route_table[0].id
+}
 
+module "ecs-fargate" {
+  source = "./modules/ecs_fargate"
+  app_count = var.app_count
+  env_prefix =var.env_prefix
+  container_port = var.container_port
+  fargate_cpu = var.fargate_cpu
+  fargate_memory = var.fargate_memory
+  # container_environment =
+  ecs_sg = module.back-elb.ecs_sg
+  private_subnet = module.back-vpc.private_subnet
+  aws_alb_target_group = module.back-elb.aws_alb_target_group
+  aws_alb_listener = module.back-elb.aws_alb_listener
 }

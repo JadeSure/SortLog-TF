@@ -63,6 +63,7 @@ resource "aws_nat_gateway" "nat" {
 
   # must be in the public subnet
   subnet_id = element(aws_subnet.public-subnet-1.*.id, count.index)
+  depends_on = [aws_internet_gateway.myapp-igw]
 
   tags = {
     Name = "Main NAT Gateway"
