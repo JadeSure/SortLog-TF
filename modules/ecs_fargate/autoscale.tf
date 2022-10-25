@@ -1,13 +1,13 @@
 resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       = 4
   min_capacity       = 1
-  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
+  resource_id        = "service/${aws_ecs_cluster.test-cluster.name}/${aws_ecs_service.test-service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
 
-
-
+# multiple rules on when to scale the number of tasks
+# rules for memory
 resource "aws_appautoscaling_policy" "ecs_policy_memory" {
   name               = "memory-autoscaling"
   policy_type        = "TargetTrackingScaling"
@@ -23,7 +23,9 @@ resource "aws_appautoscaling_policy" "ecs_policy_memory" {
    target_value       = 80
   }
 }
- 
+
+
+# rules for cpu
 resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
   name               = "cpu-autoscaling"
   policy_type        = "TargetTrackingScaling"
@@ -36,6 +38,6 @@ resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
      predefined_metric_type = "ECSServiceAverageCPUUtilization"
    }
  
-   target_value       = 60
+   target_value       = 80
   }
 }

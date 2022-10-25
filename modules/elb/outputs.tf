@@ -10,3 +10,7 @@ output "ecs_sg" {
     value = aws_security_group.ecs_sg
 }
 
+output "aws_lb"{
+    value = aws_lb.back_lb
+}
+

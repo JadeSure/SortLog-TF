@@ -98,6 +98,10 @@ module "ecs-fargate" {
   container_port = var.container_port
   fargate_cpu = var.fargate_cpu
   fargate_memory = var.fargate_memory
+  api_domain_name = var.api_domain_name
+  my_domain_name = var.my_domain_name
+
+  aws_lb = module.back-elb.aws_lb
   # container_environment =
   ecs_sg = module.back-elb.ecs_sg
   private_subnet = module.back-vpc.private_subnet

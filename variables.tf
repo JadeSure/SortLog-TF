@@ -38,3 +38,4 @@ variable "app_count" {}
 variable "container_port" {}
 variable "fargate_cpu" {}
 variable "fargate_memory" {}
+variable "api_domain_name" {}
