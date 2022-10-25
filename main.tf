@@ -1,18 +1,23 @@
 provider "aws" {
   region = var.region
+  # shared_credentials_files = "$HOME/.aws/credentials"
+  profile = "default"
 }
+
 
 module "front-s3" {
-    source = "./modules/s3"
-    bucket_name = var.bucket_name
-    s3_policy = data.aws_iam_policy_document.s3_policy.json
+  source      = "./modules/s3"
+  bucket_name = var.bucket_name
+  s3_policy   = data.aws_iam_policy_document.s3_policy.json
 }
 
-module "front-cdn"{
-    source = "./modules/cdn"
-    s3_origin_id = var.s3_origin_id
-    domain_name = module.front-s3.s3_bucket.bucket_regional_domain_name
-    cdn_comment = var.cdn_comment
+module "front-cdn" {
+  source          = "./modules/cdn"
+  s3_origin_id    = var.s3_origin_id
+  domain_name     = module.front-s3.s3_bucket.bucket_regional_domain_name
+  cdn_comment     = var.cdn_comment
+  my_domain_name  = var.my_domain_name
+  acm_certificate = module.front-acm.acm_certificate
 }
 
 
@@ -20,88 +25,86 @@ module "front-cdn"{
 # Generates an IAM policy document in JSON format for use with resources that expect policy documents
 data "aws_iam_policy_document" "s3_policy" {
   statement {
-    actions   = ["s3:GetObject"]
+    actions = ["s3:GetObject"]
     # resources = ["${aws_s3_bucket.deploy_bucket.arn}/*"]
     resources = ["${module.front-s3.s3_bucket.arn}/*"]
 
     principals {
-      type        = "AWS"
-    #   identifiers = [aws_cloudfront_origin_access_identity.cloudfront_oia.iam_arn]
+      type = "AWS"
+      #   identifiers = [aws_cloudfront_origin_access_identity.cloudfront_oia.iam_arn]
       identifiers = [module.front-cdn.cloudfront_oia.iam_arn]
     }
   }
 }
 
-# # for OAI
-# resource "aws_cloudfront_origin_access_identity" "cloudfront_oia" {
-#   comment = "example origin access identify"
-# }
-
-# locals {
-#   s3_origin_id = "sortLogS3Origin"
-# }
-
-# resource "aws_cloudfront_distribution" "s3_distribution" {
-#   origin {
-#     domain_name = module.front-s3.s3_bucket.bucket_regional_domain_name
-#     origin_id   = local.s3_origin_id
+module "front-acm" {
+  source         = "./modules/acm"
+  my_domain_name = var.my_domain_name
+  acm_region     = var.acm_region
+}
 
 
-#     # for oai
-#     s3_origin_config {
-#       #  create an aws cloudfront OAI
-#       origin_access_identity = aws_cloudfront_origin_access_identity.cloudfront_oia.cloudfront_access_identity_path
-#     }
-#   }
+module "front-route53" {
+  source                  = "./modules/route53"
+  acm_certificate         = module.front-acm.acm_certificate
+  my_domain_name          = var.my_domain_name
+  acm_region              = var.acm_region
+  cloudfront_distribution = module.front-cdn.cloudfront_distribution
+}
 
-#   enabled             = true
-#   is_ipv6_enabled     = true
-#   comment             = "My first CDN"
-#   default_root_object = "index.html"
 
-#   #   logging_config {
-#   #     include_cookies = false
-#   #     bucket          = "mylogs.s3.amazonaws.com"
-#   #     prefix          = "myprefix"
-#   #   }
+module "back-vpc" {
+  source         = "./modules/vpc"
+  vpc_cidr_block = var.vpc_cidr_block
+  env_prefix     = var.env_prefix
+  # public_subnet_cidr_block  = var.public_subnet_cidr_block
+  # private_subnet_cidr_block = var.private_subnet_cidr_block
+  az_private_count = var.az_private_count
+  az_public_count  = var.az_public_count
+  avail_zone       = var.avail_zone
+}
 
-#   #   aliases = ["mysite.example.com", "yoursite.example.com"]
+module "back-elb" {
+  source              = "./modules/elb"
+  health_check_path   = var.health_check_path
+  my_domain_name      = var.my_domain_name
+  acm_region          = var.acm_region
+  container_port = var.container_port
+  public_subnet       = module.back-vpc.public_subnet
+  myapp_vpc           = module.back-vpc.myapp_vpc
+  acm_certificate_sdy = module.front-acm.acm_certificate_sdy
+}
 
-#   default_cache_behavior {
-#     allowed_methods  = ["GET", "HEAD"]
-#     cached_methods   = ["GET", "HEAD"]
-#     target_origin_id = local.s3_origin_id
 
-#     forwarded_values {
-#       query_string = false
 
-#       cookies {
-#         forward = "none"
-#       }
-#     }
+module "myapp-server" {
+  source = "./modules/ec2"
 
-#     viewer_protocol_policy = "allow-all"
-#     min_ttl                = 0
-#     default_ttl            = 3600
-#     max_ttl                = 86400
-#   }
+  vpc_id              = module.back-vpc.myapp_vpc.id
+  my_ip_address       = var.my_ip_address
+  env_prefix          = var.env_prefix
+  instance_type       = var.instance_type
+  avail_zone          = var.avail_zone
+  public_key_location = var.public_key_location
+  # because I used count skills in vpc, I need to specific which public subnet to create
+  subnet_id      = module.back-vpc.public_subnet[0].id
+  route_table_id = module.back-vpc.public_route_table[0].id
+}
 
-#   price_class = "PriceClass_All"
+module "ecs-fargate" {
+  source = "./modules/ecs_fargate"
+  app_count = var.app_count
+  env_prefix =var.env_prefix
+  container_port = var.container_port
+  fargate_cpu = var.fargate_cpu
+  fargate_memory = var.fargate_memory
+  api_domain_name = var.api_domain_name
+  my_domain_name = var.my_domain_name
 
-#   restrictions {
-#     geo_restriction {
-#       restriction_type = "whitelist"
-#       locations        = ["US", "AU"]
-#     }
-#   }
-
-#   tags = {
-#     Environment = "production"
-#   }
-
-#   # for https
-#   viewer_certificate {
-#     cloudfront_default_certificate = true
-#   }
-# }
-
+  aws_lb = module.back-elb.aws_lb
+  # container_environment =
+  ecs_sg = module.back-elb.ecs_sg
+  private_subnet = module.back-vpc.private_subnet
+  aws_alb_target_group = module.back-elb.aws_alb_target_group
+  aws_alb_listener = module.back-elb.aws_alb_listener
+}

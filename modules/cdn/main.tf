@@ -1,5 +1,5 @@
 locals {
-#   s3_origin_id = "sortLogS3Origin"
+  #   s3_origin_id = "sortLogS3Origin"
   s3_origin_id = var.s3_origin_id
 }
 
@@ -23,6 +23,9 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
       origin_access_identity = aws_cloudfront_origin_access_identity.cloudfront_oia.cloudfront_access_identity_path
     }
   }
+
+  # If using route53 aliases for DNS we need to declare it here too, otherwise we'll get 403s.
+  aliases = [var.my_domain_name]
 
   enabled             = true
   is_ipv6_enabled     = true
@@ -71,6 +74,9 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   # for https
   viewer_certificate {
-    cloudfront_default_certificate = true
+    # cloudfront_default_certificate = true
+    acm_certificate_arn      = var.acm_certificate.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1"
   }
 }
