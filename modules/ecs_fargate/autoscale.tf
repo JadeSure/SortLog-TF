@@ -76,7 +76,8 @@ resource "aws_appautoscaling_policy" "down" {
     metric_aggregation_type = "Maximum"
 
     step_adjustment {
-      metric_interval_lower_bound = 0
+      # the lower bound for the different between the alarm threshold and the CloudWatch metric 
+      metric_interval_upper_bound = 0
       scaling_adjustment          = -1
     }
   }
