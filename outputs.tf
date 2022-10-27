@@ -19,3 +19,7 @@ output "back_domain_name" {
 output "front_domain_name" {
   value = var.my_domain_name
 }
+
+output "api_gateway_url" {
+  value = module.back-lambda.base_url.invoke_url
+}

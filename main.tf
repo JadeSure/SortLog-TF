@@ -108,3 +108,10 @@ module "ecs-fargate" {
   aws_alb_target_group = module.back-elb.aws_alb_target_group
   aws_alb_listener = module.back-elb.aws_alb_listener
 }
+
+
+# for lambda + api gateway
+module "back-lambda" {
+  source = "./modules/lambda"
+  lambda_bucket = var.lambda_bucket
+}
