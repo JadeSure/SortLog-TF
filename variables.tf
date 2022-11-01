@@ -39,3 +39,16 @@ variable "container_port" {}
 variable "fargate_cpu" {}
 variable "fargate_memory" {}
 variable "api_domain_name" {}
+variable "sortlog_api_image_link" {}
+variable "sortlog_api_max_capacity" {}
+variable "sortlog_api_min_capacity" {}
+# variable "sortlog_grafana_image_link" {}
+
+# lambda 
+variable "lambda_bucket" {}
+variable "grafana_app_count" {}
+variable "grafana_container_port" {}
+variable "sortlog_grafana_min_capacity" {}
+variable "sortlog_grafana_max_capacity" {}
+variable "grafana_domain_name" {}
+variable "grafana_image_link" {}

@@ -1,6 +1,6 @@
 locals {
-    application_name = "myapp-cluster"
-    launch_type = "FARGATE"
+  application_name = "myapp-cluster"
+  launch_type      = "FARGATE"
 }
 
 resource "aws_ecs_cluster" "test-cluster" {
@@ -16,18 +16,19 @@ resource "aws_ecs_task_definition" "test-def" {
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
 
-  container_definitions    = jsonencode([{
-   name        = "${var.env_prefix}-container"
-  #  image       = "${data.aws_ecr_repository.service.repository_url}:latest"
-  image = "public.ecr.aws/w2j2c5k5/youtube-local:latest"
-   essential   = true
-  #  environment = var.container_environment
-   portMappings = [{
-     protocol      = "tcp"
-     containerPort = var.container_port
-     hostPort      = var.container_port
-   }]
-}])
+  container_definitions = jsonencode([{
+    name = "${var.env_prefix}-container"
+    #  image       = "${data.aws_ecr_repository.service.repository_url}:latest"
+    # image     = "public.ecr.aws/w2j2c5k5/youtube-local:latest"
+    image = var.image_link
+    essential = true
+    #  environment = var.container_environment
+    portMappings = [{
+      protocol      = "tcp"
+      containerPort = var.container_port
+      hostPort      = var.container_port
+    }]
+  }])
 }
 
 
@@ -36,13 +37,13 @@ resource "aws_ecs_service" "test-service" {
   name            = "${var.env_prefix}-service"
   cluster         = aws_ecs_cluster.test-cluster.id
   task_definition = aws_ecs_task_definition.test-def.arn
-  
-  deployment_maximum_percent = 200
-  deployment_minimum_healthy_percent = 50
-  desired_count   = var.app_count
 
-  launch_type     = local.launch_type
-  scheduling_strategy                = "REPLICA"
+  deployment_maximum_percent         = 200
+  deployment_minimum_healthy_percent = 50
+  desired_count                      = var.app_count
+
+  launch_type         = local.launch_type
+  scheduling_strategy = "REPLICA"
 
 
   network_configuration {
@@ -57,7 +58,7 @@ resource "aws_ecs_service" "test-service" {
     container_port   = var.container_port
   }
 
-   lifecycle {
+  lifecycle {
     ignore_changes = [task_definition, desired_count]
   }
 

@@ -1,6 +1,6 @@
 resource "aws_ecr_repository" "main" {
-  name                 = "${var.env_prefix}-sortlog"
-#   This is necessary in order to put a latest tag on the most recent image.
+  name = "${var.env_prefix}-sortlog"
+  #   This is necessary in order to put a latest tag on the most recent image.
   image_tag_mutability = "MUTABLE"
 }
 
@@ -12,9 +12,9 @@ resource "aws_ecr_repository" "main" {
 
 resource "aws_ecr_lifecycle_policy" "main" {
   repository = aws_ecr_repository.main.name
-    
 
-// more than 10 images, which will be deleted directly
+
+  // more than 10 images, which will be deleted directly
   policy = <<EOF
 {
     "rules": [

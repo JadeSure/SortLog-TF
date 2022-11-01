@@ -62,7 +62,7 @@ resource "aws_nat_gateway" "nat" {
   allocation_id = element(aws_eip.nat_eip.*.id, count.index)
 
   # must be in the public subnet
-  subnet_id = element(aws_subnet.public-subnet-1.*.id, count.index)
+  subnet_id  = element(aws_subnet.public-subnet-1.*.id, count.index)
   depends_on = [aws_internet_gateway.myapp-igw]
 
   tags = {
