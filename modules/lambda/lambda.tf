@@ -10,7 +10,7 @@ resource "aws_lambda_function" "example" {
   # exported in that file.
   handler = "main.handler"
   runtime = "nodejs14.x"
-  role=aws_iam_role.lambda_exec.arn
+  role    = aws_iam_role.lambda_exec.arn
 }
 
 # create a role, which dictates what other aws services the lambda function may access

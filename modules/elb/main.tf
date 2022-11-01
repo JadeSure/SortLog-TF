@@ -32,11 +32,11 @@ resource "aws_lb" "back_lb" {
 # }
 
 resource "aws_lb_target_group" "back_tg" {
-  name = "myecs-tg"
+  name        = "myecs-tg"
   target_type = "ip"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = var.myapp_vpc.id
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = var.myapp_vpc.id
 
   health_check {
     healthy_threshold   = 2
@@ -60,15 +60,15 @@ resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_lb.back_lb.arn
   port              = 80
   protocol          = "HTTP"
- 
+
   default_action {
-   type = "redirect"
- 
-   redirect {
-     port        = 443
-     protocol    = "HTTPS"
-     status_code = "HTTP_301"
-   }
+    type = "redirect"
+
+    redirect {
+      port        = 443
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 

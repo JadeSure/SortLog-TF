@@ -5,18 +5,18 @@ resource "aws_security_group" "alb-sg" {
   vpc_id      = var.myapp_vpc.id
 
   ingress {
-    protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
-    cidr_blocks = ["0.0.0.0/0"]
+    protocol         = "tcp"
+    from_port        = 80
+    to_port          = 80
+    cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
 
@@ -38,11 +38,11 @@ resource "aws_security_group" "ecs_sg" {
   vpc_id      = var.myapp_vpc.id
 
   ingress {
-    protocol        = "tcp"
+    protocol = "tcp"
     # from_port       = 80
     # to_port         = 80
     from_port = var.container_port
-    to_port = var.container_port
+    to_port   = var.container_port
     # cidr_blocks      = ["0.0.0.0/0"]
     # ipv6_cidr_blocks = ["::/0"]
     security_groups = [aws_security_group.alb-sg.id]

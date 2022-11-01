@@ -64,18 +64,6 @@ module "back-vpc" {
   avail_zone       = var.avail_zone
 }
 
-module "back-elb" {
-  source              = "./modules/elb"
-  health_check_path   = var.health_check_path
-  my_domain_name      = var.my_domain_name
-  acm_region          = var.acm_region
-  container_port = var.container_port
-  public_subnet       = module.back-vpc.public_subnet
-  myapp_vpc           = module.back-vpc.myapp_vpc
-  acm_certificate_sdy = module.front-acm.acm_certificate_sdy
-}
-
-
 
 module "myapp-server" {
   source = "./modules/ec2"
@@ -91,27 +79,75 @@ module "myapp-server" {
   route_table_id = module.back-vpc.public_route_table[0].id
 }
 
+
+module "back-elb" {
+  source              = "./modules/elb"
+  health_check_path   = var.health_check_path
+  my_domain_name      = var.my_domain_name
+  acm_region          = var.acm_region
+  container_port      = var.container_port
+  public_subnet       = module.back-vpc.public_subnet
+  myapp_vpc           = module.back-vpc.myapp_vpc
+  acm_certificate_sdy = module.front-acm.acm_certificate_sdy
+}
+
 module "ecs-fargate" {
-  source = "./modules/ecs_fargate"
-  app_count = var.app_count
-  env_prefix =var.env_prefix
-  container_port = var.container_port
-  fargate_cpu = var.fargate_cpu
-  fargate_memory = var.fargate_memory
+  source          = "./modules/ecs_fargate"
+  app_count       = var.app_count
+  env_prefix      = var.env_prefix
+  container_port  = var.container_port
+  fargate_cpu     = var.fargate_cpu
+  fargate_memory  = var.fargate_memory
   api_domain_name = var.api_domain_name
-  my_domain_name = var.my_domain_name
+  my_domain_name  = var.my_domain_name
+  image_link = var.sortlog_api_image_link
+  max_capacity = var.sortlog_api_max_capacity
+  min_capacity = var.sortlog_api_min_capacity
 
   aws_lb = module.back-elb.aws_lb
-  # container_environment =
-  ecs_sg = module.back-elb.ecs_sg
-  private_subnet = module.back-vpc.private_subnet
+  ecs_sg               = module.back-elb.ecs_sg
+  private_subnet       = module.back-vpc.private_subnet
   aws_alb_target_group = module.back-elb.aws_alb_target_group
-  aws_alb_listener = module.back-elb.aws_alb_listener
+  aws_alb_listener     = module.back-elb.aws_alb_listener
 }
+
+
+# module "grafana-elb" {
+#   source              = "./modules/elb"
+#   health_check_path   = var.health_check_path
+#   my_domain_name      = var.my_domain_name
+#   acm_region          = var.acm_region
+#   container_port      = var.container_port
+#   public_subnet       = module.back-vpc.public_subnet
+#   myapp_vpc           = module.back-vpc.myapp_vpc
+#   acm_certificate_sdy = module.front-acm.acm_certificate_sdy
+# }
+
+
+# module "ecs-grafana" {
+#   source = "./modules/ecs_fargate"
+#   app_count = var.grafana_app_count
+#   env_prefix          = var.env_prefix
+#   container_port = var.grafana_container_port
+#   fargate_cpu = var.fargate_cpu
+#   fargate_memory = var.fargate_memory
+#   api_domain_name = var.grafana_domain_name
+#   my_domain_name = var.my_domain_name
+#   image_link = var.grafana_image_link
+#   max_capacity = var.sortlog_grafana_max_capacity
+#   min_capacity = var.sortlog_grafana_min_capacity
+
+#   aws_lb = module.grafana-elb.aws_lb
+#   ecs_sg               = module.grafana-elb.ecs_sg
+#   private_subnet       = module.back-vpc.private_subnet
+#   aws_alb_target_group = module.grafana-elb.aws_alb_target_group
+#   aws_alb_listener     = module.grafana-elb.aws_alb_listener
+
+# }
 
 
 # for lambda + api gateway
-module "back-lambda" {
-  source = "./modules/lambda"
-  lambda_bucket = var.lambda_bucket
-}
+# module "back-lambda" {
+#   source        = "./modules/lambda"
+#   lambda_bucket = var.lambda_bucket
+# }
