@@ -100,15 +100,23 @@ module "ecs-fargate" {
   fargate_memory  = var.fargate_memory
   api_domain_name = var.api_domain_name
   my_domain_name  = var.my_domain_name
-  image_link = var.sortlog_api_image_link
-  max_capacity = var.sortlog_api_max_capacity
-  min_capacity = var.sortlog_api_min_capacity
+  image_link      = var.sortlog_api_image_link
+  max_capacity    = var.sortlog_api_max_capacity
+  min_capacity    = var.sortlog_api_min_capacity
 
-  aws_lb = module.back-elb.aws_lb
+  aws_lb               = module.back-elb.aws_lb
   ecs_sg               = module.back-elb.ecs_sg
   private_subnet       = module.back-vpc.private_subnet
   aws_alb_target_group = module.back-elb.aws_alb_target_group
   aws_alb_listener     = module.back-elb.aws_alb_listener
+
+  sortlog_mongodb_key = var.sortlog_mongodb_key
+  sortlog_secret_key  = var.sortlog_secret_key
+  sortlog_port_key    = var.sortlog_port_key
+
+  sortlog_mongodb_value = var.sortlog_mongodb_value
+  sortlog_secret_value  = var.sortlog_secret_value
+  sortlog_port_value    = var.sortlog_port_value
 }
 
 

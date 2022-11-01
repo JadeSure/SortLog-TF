@@ -20,3 +20,11 @@ variable "my_domain_name" {}
 variable "image_link" {}
 variable "max_capacity" {}
 variable "min_capacity" {}
+
+
+variable "sortlog_mongodb_key" {}
+variable "sortlog_secret_key" {}
+variable "sortlog_port_key" {}
+variable "sortlog_mongodb_value" {}
+variable "sortlog_secret_value" {}
+variable "sortlog_port_value" {}

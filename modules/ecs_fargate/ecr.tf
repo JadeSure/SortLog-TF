@@ -6,7 +6,7 @@ resource "aws_ecr_repository" "main" {
 
 
 # data "aws_ecr_repository" "service" {
-#   name = "youtube-local"
+#   name = "sortlog-repository"
 # }
 
 
