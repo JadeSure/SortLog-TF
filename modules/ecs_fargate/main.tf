@@ -23,11 +23,11 @@ resource "aws_ecs_task_definition" "test-def" {
     # image     = "public.ecr.aws/w2j2c5k5/youtube-local:latest"
     image     = var.image_link
     essential = true
-    environment = [
-      { "name" : var.sortlog_mongodb_key, "value" : var.sortlog_mongodb_value },
-      { "name" : var.sortlog_secret_key, "value" : var.sortlog_secret_value },
-      { "name" : var.sortlog_port_key, "value" : var.sortlog_port_value }
-    ]
+    # environment = [
+    #   { "name" : var.sortlog_mongodb_key, "value" : var.sortlog_mongodb_value },
+    #   { "name" : var.sortlog_secret_key, "value" : var.sortlog_secret_value },
+    #   { "name" : var.sortlog_port_key, "value" : var.sortlog_port_value }
+    # ]
     #  environment = var.container_environment
     portMappings = [{
       protocol      = "tcp"
