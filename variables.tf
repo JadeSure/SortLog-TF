@@ -11,6 +11,7 @@ variable "cdn_comment" {
   type = string
 }
 
+variable "aws_profile" {}
 # ACM
 variable "region" {}
 variable "my_domain_name" {}

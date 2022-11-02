@@ -1,10 +1,3 @@
-provider "aws" {
-  region = var.region
-  # shared_credentials_files = "$HOME/.aws/credentials"
-  profile = "default"
-}
-
-
 module "front-s3" {
   source      = "./modules/s3"
   bucket_name = var.bucket_name

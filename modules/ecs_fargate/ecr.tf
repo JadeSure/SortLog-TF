@@ -5,9 +5,9 @@ resource "aws_ecr_repository" "main" {
 }
 
 
-# data "aws_ecr_repository" "service" {
-#   name = "sortlog-repository"
-# }
+data "aws_ecr_repository" "service" {
+  name = "worked-sortlog"
+}
 
 
 resource "aws_ecr_lifecycle_policy" "main" {

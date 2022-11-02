@@ -1,7 +1,7 @@
 locals {
   application_name = "${var.env_prefix}-cluster"
   # application_name = "myapp-cluster"
-  launch_type      = "FARGATE"
+  launch_type = "FARGATE"
 }
 
 resource "aws_ecs_cluster" "test-cluster" {
@@ -19,9 +19,9 @@ resource "aws_ecs_task_definition" "test-def" {
 
   container_definitions = jsonencode([{
     name = "${var.env_prefix}-container"
-    #  image       = "${data.aws_ecr_repository.service.repository_url}:latest"
     # image     = "public.ecr.aws/w2j2c5k5/youtube-local:latest"
-    image     = var.image_link
+    # image     = var.image_link
+    image = "${data.aws_ecr_repository.service.repository_url}:latest"
     essential = true
     # environment = [
     #   { "name" : var.sortlog_mongodb_key, "value" : var.sortlog_mongodb_value },
