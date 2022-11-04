@@ -25,7 +25,7 @@ pipeline {
             steps {
                 withAWS(credentials: AWS_CRED, region: AWS_REGION){
                     script {
-                        if (env.BRANCH_NAME == 'dev' && params.applyTF){
+                        if (env.BRANCH_NAME == 'dev'){
                              sh  '''
                             terraform init -input=false
                             terraform workspace select $APP_ENV || terraform workspace new $APP_ENV
@@ -39,12 +39,10 @@ pipeline {
                             cdn = sh(returnStdout: true, script: "terraform output cdn")
                             alb_dns_name = sh(returnStdout: true, script: "terraform output alb_dns_name")
                         }
-                        sh  '''
-                            echo ${front_domain_name}
-                            echo ${back_domain_name}
-                            echo ${cdn}
-                            echo ${alb_dns_name}
-                        '''
+                        sh  'echo ${front_domain_name}'
+                        sh  'echo ${back_domain_name}'
+                           
+                    
                         }
                     }
                 }
