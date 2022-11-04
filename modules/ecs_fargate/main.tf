@@ -1,6 +1,7 @@
 locals {
-  application_name = "myapp-cluster"
-  launch_type      = "FARGATE"
+  application_name = "${var.env_prefix}-cluster"
+  # application_name = "myapp-cluster"
+  launch_type = "FARGATE"
 }
 
 resource "aws_ecs_cluster" "test-cluster" {
@@ -8,7 +9,7 @@ resource "aws_ecs_cluster" "test-cluster" {
 }
 
 resource "aws_ecs_task_definition" "test-def" {
-  family                   = "myapp-task"
+  family                   = "${var.env_prefix}-task"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
   network_mode             = "awsvpc"
@@ -18,10 +19,15 @@ resource "aws_ecs_task_definition" "test-def" {
 
   container_definitions = jsonencode([{
     name = "${var.env_prefix}-container"
-    #  image       = "${data.aws_ecr_repository.service.repository_url}:latest"
     # image     = "public.ecr.aws/w2j2c5k5/youtube-local:latest"
-    image = var.image_link
+    # image     = var.image_link
+    image = "${data.aws_ecr_repository.service.repository_url}:latest"
     essential = true
+    # environment = [
+    #   { "name" : var.sortlog_mongodb_key, "value" : var.sortlog_mongodb_value },
+    #   { "name" : var.sortlog_secret_key, "value" : var.sortlog_secret_value },
+    #   { "name" : var.sortlog_port_key, "value" : var.sortlog_port_value }
+    # ]
     #  environment = var.container_environment
     portMappings = [{
       protocol      = "tcp"

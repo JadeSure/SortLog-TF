@@ -16,7 +16,17 @@ variable "api_domain_name" {}
 variable "aws_lb" {}
 variable "my_domain_name" {}
 
+variable "exist_repo" {}
+
 # grafana
-variable "image_link" {}
+# variable "image_link" {}
 variable "max_capacity" {}
 variable "min_capacity" {}
+
+
+# variable "sortlog_mongodb_key" {}
+# variable "sortlog_secret_key" {}
+# variable "sortlog_port_key" {}
+# variable "sortlog_mongodb_value" {}
+# variable "sortlog_secret_value" {}
+# variable "sortlog_port_value" {}

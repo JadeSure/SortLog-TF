@@ -5,9 +5,9 @@ resource "aws_ecr_repository" "main" {
 }
 
 
-# data "aws_ecr_repository" "service" {
-#   name = "youtube-local"
-# }
+data "aws_ecr_repository" "service" {
+  name = var.exist_repo
+}
 
 
 resource "aws_ecr_lifecycle_policy" "main" {

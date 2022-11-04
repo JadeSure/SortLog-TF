@@ -11,6 +11,7 @@ variable "cdn_comment" {
   type = string
 }
 
+variable "aws_profile" {}
 # ACM
 variable "region" {}
 variable "my_domain_name" {}
@@ -39,10 +40,19 @@ variable "container_port" {}
 variable "fargate_cpu" {}
 variable "fargate_memory" {}
 variable "api_domain_name" {}
-variable "sortlog_api_image_link" {}
+# variable "sortlog_api_image_link" {}
 variable "sortlog_api_max_capacity" {}
 variable "sortlog_api_min_capacity" {}
 # variable "sortlog_grafana_image_link" {}
+
+variable "exist_repo" {}
+
+# variable "sortlog_mongodb_key" {}
+# variable "sortlog_secret_key" {}
+# variable "sortlog_port_key" {}
+# variable "sortlog_mongodb_value" {}
+# variable "sortlog_secret_value" {}
+# variable "sortlog_port_value" {}
 
 # lambda 
 variable "lambda_bucket" {}
