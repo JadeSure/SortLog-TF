@@ -4,7 +4,7 @@ bucket_name    = "oldiron666.sortlog"
 s3_origin_id   = "oldiron666"
 cdn_comment    = "sortlog cdn"
 my_domain_name = "devops.shawnwong.click"
-env_prefix     = "dev"
+# env_prefix     = "dev"
 
 # VPC
 vpc_cidr_block = "10.0.0.0/16"

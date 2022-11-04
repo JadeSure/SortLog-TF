@@ -35,7 +35,7 @@ pipeline {
                             terraform init -input=false
                             terraform workspace select $APP_ENV || terraform workspace new $APP_ENV
                             terraform destroy \
-                               -var="app_env=$APP_ENV"\
+                               -var="env_prefix=$APP_ENV"\
                                --auto-approve
                             '''
                         script {
@@ -56,32 +56,32 @@ pipeline {
             }
         }
 
-        stage('dev'){
-            // when {
-            //     branch 'dev'
-            // }
-            // when {
-            //     expression {return params.applyTF && }
-            // }
+        // stage('dev'){
+        //     // when {
+        //     //     branch 'dev'
+        //     // }
+        //     // when {
+        //     //     expression {return params.applyTF && }
+        //     // }
 
-            steps {
-                withAWS(credentials: AWS_CRED, region: AWS_REGION){
+        //     steps {
+        //         withAWS(credentials: AWS_CRED, region: AWS_REGION){
 
-                    script {
-                        if (env.BRANCH_NAME == 'dev' && params.applyTF){
-                            echo "Upload Docker Image to ECR"
-                            script {
-                            sh '''
-                                aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
-                                docker tag $IMAGE_NAME:${params.ImgTag} $ECR_URL/$IMAGE_NAME:${params.ImgTag} 
-                                docker push $ECR_URL/$IMAGE_NAME:${params.ImgTag}
-                            '''
-                            }
-                        }
-                    }
-                }
-            }
-        } 
+        //             script {
+        //                 if (env.BRANCH_NAME == 'dev' && params.applyTF){
+        //                     echo "Upload Docker Image to ECR"
+        //                     script {
+        //                     sh '''
+        //                         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
+        //                         docker tag $IMAGE_NAME:${params.ImgTag} $ECR_URL/$IMAGE_NAME:${params.ImgTag} 
+        //                         docker push $ECR_URL/$IMAGE_NAME:${params.ImgTag}
+        //                     '''
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // } 
     }
 
     post {
