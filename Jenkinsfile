@@ -1,10 +1,14 @@
 pipeline {
     agent any 
 
-     parameters {
-        booleanParam defaultValue: true,  description: 'True: generate TF AWS resources', name: 'applyTF'
+    //  parameters {
+    //     booleanParam defaultValue: true,  description: 'True: generate TF AWS resources', name: 'applyTF'
 
-    }   
+    // }   
+    parameters {
+        choice choices: ['apply', 'destroy'], description: '''apply for creating resources
+        destroy for releasing all the resources''', name: 'TFOperation'
+    }
 
     environment {
         AWS_CRED = "AWS_sortlog"
@@ -25,7 +29,7 @@ pipeline {
                              sh  '''
                             terraform init -input=false
                             terraform workspace select $APP_ENV || terraform workspace new $APP_ENV
-                            terraform apply \
+                            terraform $TFOperation \
                                -var="env_prefix=$APP_ENV"\
                                --auto-approve
                             '''
