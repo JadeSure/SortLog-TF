@@ -25,7 +25,7 @@ pipeline {
                              sh  '''
                             terraform init -input=false
                             terraform workspace select $APP_ENV || terraform workspace new $APP_ENV
-                            terraform destroy \
+                            terraform apply \
                                -var="env_prefix=$APP_ENV"\
                                --auto-approve
                             '''
