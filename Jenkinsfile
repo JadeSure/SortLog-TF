@@ -8,6 +8,8 @@ pipeline {
     parameters {
         choice choices: ['apply', 'destroy'], description: '''apply for creating resources
         destroy for releasing all the resources''', name: 'TFOperation'
+        choice choices: ['dev-uat', 'prod'], description: '''apply for creating resources
+        destroy for releasing all the resources''', name: 'APP_ENV'
     }
 
     environment {
@@ -15,7 +17,7 @@ pipeline {
         AWS_REGION = "ap-southeast-2"
 
         // tf
-        APP_ENV = "dev-uat"
+        APP_ENV = "$APP_ENV"
     }   
 
 
@@ -33,16 +35,14 @@ pipeline {
                                -var="env_prefix=$APP_ENV"\
                                --auto-approve
                             '''
-                        script {
-                            front_domain_name = sh(returnStdout: true, script: "terraform output front_domain_name")
-                            back_domain_name = sh(returnStdout: true, script: "terraform output back_domain_name")
-                            cdn = sh(returnStdout: true, script: "terraform output cdn")
-                            alb_dns_name = sh(returnStdout: true, script: "terraform output alb_dns_name")
-                        }
-                        sh  'echo ${front_domain_name}'
-                        sh  'echo ${back_domain_name}'
-                           
-                    
+                            script {
+                                front_domain_name = sh(returnStdout: true, script: "terraform output front_domain_name")
+                                back_domain_name = sh(returnStdout: true, script: "terraform output back_domain_name")
+                                cdn = sh(returnStdout: true, script: "terraform output cdn")
+                                alb_dns_name = sh(returnStdout: true, script: "terraform output alb_dns_name")
+                            }
+                            sh  "echo ${front_domain_name}"
+                            sh  "echo ${back_domain_name}"
                         }
                     }
                 }
