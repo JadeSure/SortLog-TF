@@ -23,7 +23,7 @@ pipeline {
 
     stages {
 
-        stage ('tf-dev'){
+        stage ('TF-Building Resources'){
             steps {
                 withAWS(credentials: AWS_CRED, region: AWS_REGION){
                     script {
