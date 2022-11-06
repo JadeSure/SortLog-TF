@@ -41,8 +41,8 @@ pipeline {
                                 cdn = sh(returnStdout: true, script: "terraform output cdn")
                                 alb_dns_name = sh(returnStdout: true, script: "terraform output alb_dns_name")
                             }
-                            sh  "echo ${front_domain_name}"
-                            sh  "echo ${back_domain_name}"
+                            sh  "echo frontend domain name: ${front_domain_name} || echo Destroy Success!"
+                            sh  "echo backend domain name: ${back_domain_name} || echo Good Job!!!"
                         }
                     }
                 }
