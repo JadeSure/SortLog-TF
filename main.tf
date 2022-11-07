@@ -58,19 +58,19 @@ module "back-vpc" {
 }
 
 
-module "myapp-server" {
-  source = "./modules/ec2"
+# module "myapp-server" {
+#   source = "./modules/ec2"
 
-  vpc_id              = module.back-vpc.myapp_vpc.id
-  my_ip_address       = var.my_ip_address
-  env_prefix          = var.env_prefix
-  instance_type       = var.instance_type
-  avail_zone          = var.avail_zone
-  public_key_location = var.public_key_location
-  # because I used count skills in vpc, I need to specific which public subnet to create
-  subnet_id      = module.back-vpc.public_subnet[0].id
-  route_table_id = module.back-vpc.public_route_table[0].id
-}
+#   vpc_id              = module.back-vpc.myapp_vpc.id
+#   my_ip_address       = var.my_ip_address
+#   env_prefix          = var.env_prefix
+#   instance_type       = var.instance_type
+#   avail_zone          = var.avail_zone
+#   public_key_location = var.public_key_location
+#   # because I used count skills in vpc, I need to specific which public subnet to create
+#   subnet_id      = module.back-vpc.public_subnet[0].id
+#   route_table_id = module.back-vpc.public_route_table[0].id
+# }
 
 
 module "back-elb" {
