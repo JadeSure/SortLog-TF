@@ -8,7 +8,7 @@ pipeline {
     parameters {
         choice choices: ['apply', 'destroy'], description: '''apply for creating resources
         destroy for releasing all the resources''', name: 'TFOperation'
-        choice choices: ['dev', 'prod'], description: '''apply for creating resources
+        choice choices: ['dev', 'master'], description: '''apply for creating resources
         destroy for releasing all the resources''', name: 'APP_ENV'
     }
 
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 withAWS(credentials: AWS_CRED, region: AWS_REGION){
                     script {
-                        if (env.BRANCH_NAME == '$APP_ENV'){
+                        if (env.BRANCH_NAME == $APP_ENV){
                              sh  '''
                             terraform init -input=false
                             terraform workspace select $APP_ENV || terraform workspace new $APP_ENV
