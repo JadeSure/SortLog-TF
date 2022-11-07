@@ -24,6 +24,13 @@ pipeline {
     stages {
 
         stage ('TF-Building Resources'){
+            agent {
+                docker {
+                    image 'hashicorp/terraform:light'
+                    args '-i --entrypoint='
+                }
+            }
+
             steps {
                 withAWS(credentials: AWS_CRED, region: AWS_REGION){
                     script {
@@ -63,8 +70,8 @@ pipeline {
                 try{
                     // docker images -qa | xargs docker rmi -f
                     sh'''
-                        docker rmi $(docker images -q)
-                        docker system prune
+                        docker rmi -f $(docker images -q)
+                        docker system prune -f
                         cleanWs()
                     '''
                 } catch (Exception e) {
