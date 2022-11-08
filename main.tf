@@ -4,6 +4,10 @@ module "front-s3" {
   s3_policy   = data.aws_iam_policy_document.s3_policy.json
 }
 
+locals {
+  env_prefix = terraform.workspace
+}
+
 module "front-cdn" {
   source          = "./modules/cdn"
   s3_origin_id    = var.s3_origin_id

@@ -24,6 +24,7 @@ pipeline {
     stages {
 
         stage ('TF-Building Resources'){
+            when { anyOf { branch 'master'; branch 'dev' } }
             agent {
                 docker {
                     image 'hashicorp/terraform:light'
@@ -39,7 +40,9 @@ pipeline {
                             terraform init -input=false
                             terraform workspace select $APP_ENV || terraform workspace new $APP_ENV
                             terraform $TFOperation \
-                               -var="env_prefix=$APP_ENV"\
+                               -var="env_prefix=$APP_ENV" \
+                               -var-file $APP_ENV.tfvars \
+                               -lock-false \ 
                                --auto-approve
                             '''
                             script {
