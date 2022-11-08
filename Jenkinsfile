@@ -42,7 +42,6 @@ pipeline {
                             terraform $TFOperation \
                                -var="env_prefix=$APP_ENV" \
                                -var-file $APP_ENV.tfvars \
-                               -lock-false \ 
                                --auto-approve
                             '''
                             script {
